@@ -1,0 +1,23 @@
+/* src/styles/globals.css */
+
+/* Import Tailwind base styles */
+@tailwind base;
+
+/* Import Tailwind component classes */
+@tailwind components;
+
+/* Import Tailwind utility classes */
+@tailwind utilities;
+
+/* You can add your custom global styles below */
+body {
+  font-family: 'Inter', sans-serif; /* Optional: set default font */
+  background-color: #f9fafb; /* Optional: light gray background */
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
