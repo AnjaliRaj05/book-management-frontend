@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import { Form, Input, Button, message, Card, Typography } from "antd";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { AuthContext } from "@/context/AuthContext"; 
 import api from "@/utils/api";
@@ -53,7 +52,7 @@ export default function Login() {
               { type: "email", message: "Please enter a valid email" },
             ]}
           >
-            <Input placeholder="Enter your email" />
+            <Input placeholder="Anjali@gmail.com" />
           </Form.Item>
 
           <Form.Item
@@ -61,7 +60,7 @@ export default function Login() {
             label="Password"
             rules={[{ required: true, message: "Please enter your password" }]}
           >
-            <Input.Password placeholder="Enter your password" />
+            <Input.Password placeholder="Anjali@1234" />
           </Form.Item>
 
           <Form.Item>

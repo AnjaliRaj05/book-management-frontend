@@ -1,8 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Form, Input, Button, message, Card, Typography } from "antd";
-import axios from "axios";
 import { useRouter } from "next/router";
-import { AuthContext } from "@/context/AuthContext"; // ✅ import context
+import { AuthContext } from "@/context/AuthContext";
 import api from "@/utils/api";
 const { Title, Text } = Typography;
 
