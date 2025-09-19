@@ -1,40 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# React.js Developer Assessment Task
 
-## Getting Started
+## Project Title
+**Dashboard for a Book Management App**
 
-First, run the development server:
+## Objective
+Build a **responsive React.js dashboard** that fetches, displays, and allows **CRUD operations** on a list of books using a mock API.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Task Requirements and Implementation
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### 1. Frontend Features
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+#### Home Page (Dashboard)
+- **Book Listing**
+  - Displayed in a **table** view using **Ant Design Table**.
+  - Each book shows:
+    - **Title**
+    - **Author**
+    - **Genre**
+    - **Published Year**
+    - **Status** (Available / Issued)
+  - Includes **pagination** (10 books per page by default).
+  - **Search** functionality by title or author.
+  - **Filters** for Genre and Status implemented via dropdowns.
+- **Loading State**
+  - Displays a **centered spinner** while fetching data for better UX.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+#### Add/Edit Book Modal/Form
+- **Modal-based UI** for adding or editing a book.
+- Form validation using **Ant Design Form validation rules**.
+- On submission, sends **POST or PUT requests** to the API.
+- Updates the table dynamically without page reload.
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Delete Book
+- **Confirmation popup** before deletion using Ant Design `Popconfirm`.
+- Shows **toast notifications** for success or error using `message`.
 
-## Learn More
+#### Styling/Design
+- Built with **Ant Design** for components (Table, Form, Modal, Buttons, Typography, Spin).
+- Responsive layout using **Ant Design Grid system** (`Row` and `Col`).
+- Clean, modern dashboard styling:
+  - Color theme: `#8B5E3C` for primary actions and headers.
+  - Cards, modals, and tables styled with shadows and rounded corners.
+- Fully **responsive** design for mobile and desktop screens.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+### 2. API Integration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Uses **Axios** for all API calls.
+- Mock API endpoints (you can replace with any backend later):
+  - `GET /books` – Fetch all books
+  - `POST /books` – Add a book
+  - `PUT /books/:id` – Edit a book
+  - `DELETE /books/:id` – Delete a book
 
-## Deploy on Vercel
+> Currently integrated with a local or mock API (like `crudcrud.com` or `json-server`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### 3. State Management
+
+- Global user state handled via **React Context API** (`AuthContext`).
+- Local component states for filters, search, modals, and loading indicators.
+- Ensures seamless user experience without unnecessary re-renders.
+
+---
+
+### 4. Bonus / UX Enhancements
+
+- **Loading Spinner** centered while fetching books.
+- Responsive **filters and search bar** that collapse gracefully on smaller screens.
+- Toast messages for all actions (add, edit, delete, error notifications).
+- Modular **component-based structure**:
+  - `Layout.tsx` – main wrapper with consistent layout
+  - `AddBookModal.tsx` / `EditBookModal.tsx` – book form modals
+  - `ProfileModal.tsx` – user profile modal
+
+---
+
+## Folder Structure
+
