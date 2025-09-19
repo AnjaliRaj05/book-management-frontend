@@ -1,28 +1,37 @@
 import React, { useState, useContext } from "react";
 import { Form, Input, Button, message, Card, Typography } from "antd";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext";
 import api from "@/utils/api";
+
 const { Title, Text } = Typography;
+
+interface SignupFormValues {
+  fullname: string;
+  email: string;
+  password: string;
+}
 
 export default function Signup() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { setUser } = useContext(AuthContext); 
+  const { setUser } = useContext(AuthContext);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: SignupFormValues) => {
     setLoading(true);
     try {
       const res = await api.post("/users/register", values);
-      const userData = res.data.user; 
-      localStorage.setItem("token", res.data.token || "dummy"); 
+      const userData = res.data.user;
+      localStorage.setItem("token", res.data.token || "dummy");
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
 
       message.success("Signup successful!");
       router.push("/");
-    } catch (error: any) {
-      message.error(error.response?.data?.message || "Signup failed");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      message.error(err.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -40,7 +49,7 @@ export default function Signup() {
           <Text type="secondary">Fill in your details to get started</Text>
         </div>
 
-        <Form
+        <Form<SignupFormValues>
           onFinish={onFinish}
           layout="vertical"
           initialValues={{ fullname: "", email: "", password: "" }}
@@ -92,7 +101,7 @@ export default function Signup() {
           <div style={{ textAlign: "center" }}>
             <Text>
               Already have an account?{" "}
-              <a href="/login" style={{ color: "#8B5E3C" }}>Login</a>
+              <Link href="/login" style={{ color: "#8B5E3C" }}>Login</Link>
             </Text>
           </div>
         </Form>
@@ -109,10 +118,6 @@ export default function Signup() {
 
         .signup-card {
           box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .signup-header Title {
-          font-weight: bold;
         }
       `}</style>
     </div>

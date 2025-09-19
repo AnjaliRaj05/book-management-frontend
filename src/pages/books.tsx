@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Layout from "@/components/Layout";
 import {
   Table,
@@ -8,15 +8,19 @@ import {
   Popconfirm,
   message,
   Select,
-  Input, Row, Col} from "antd";
+  Input,
+  Row,
+  Col,
+} from "antd";
 import { AxiosError } from "axios";
 import api from "@/utils/api";
 import EditBookModal from "@/components/EditBookModal";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-const { Content } = AntLayout;
 import { Typography } from "antd";
 
+const { Content } = AntLayout;
 const { Title } = Typography;
+
 interface Book {
   _id: string;
   title: string;
@@ -73,35 +77,42 @@ export default function BookList() {
     }
   };
 
-  const fetchBooks = async (page = 1, limit = 10) => {
-    setLoading(true);
-    try {
-      const query: any = { page, limit };
-      if (genreFilter) query.genre = genreFilter;
-      if (statusFilter) query.status = statusFilter;
-      if (searchQuery) query.search = searchQuery;
+  // Use useCallback to memoize fetchBooks and satisfy useEffect dependency
+  const fetchBooks = useCallback(
+    async (page = 1, limit = 10) => {
+      setLoading(true);
+      try {
+        const query: Record<string, string | number> = { page, limit };
+        if (genreFilter) query.genre = genreFilter;
+        if (statusFilter) query.status = statusFilter;
+        if (searchQuery) query.search = searchQuery;
 
-      const queryString = new URLSearchParams(query).toString();
-      const res = await api.get<{ books: Book[]; total: number }>(`/books?${queryString}`);
+        const queryString = new URLSearchParams(
+          Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)]))
+        ).toString();
 
-      setBooks(res.data.books);
-      setTotal(res.data.total);
-      if (res.data.books.length === 0) {
-        messageApi.info("No books found with current filters or search.");
+        const res = await api.get<{ books: Book[]; total: number }>(`/books?${queryString}`);
+        setBooks(res.data.books);
+        setTotal(res.data.total);
+
+        if (res.data.books.length === 0) {
+          messageApi.info("No books found with current filters or search.");
+        }
+      } catch (error) {
+        const err = error as AxiosError<{ message: string }>;
+        console.error(err);
+        messageApi.error(err.response?.data?.message || "❌ Failed to fetch books");
+        setBooks([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-      console.error(err);
-      messageApi.error(err.response?.data?.message || "❌ Failed to fetch books");
-      setBooks([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [genreFilter, statusFilter, searchQuery, messageApi]
+  );
 
   useEffect(() => {
     fetchBooks(currentPage, pageSize);
-  }, [genreFilter, statusFilter, searchQuery, currentPage, pageSize]);
+  }, [fetchBooks, currentPage, pageSize]);
 
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },
@@ -114,7 +125,9 @@ export default function BookList() {
       key: "actions",
       render: (_: unknown, record: Book) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          <Button type="primary" icon={<EditOutlined />} onClick={() => openEditModal(record)}>Edit</Button>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => openEditModal(record)}>
+            Edit
+          </Button>
           <Popconfirm
             title={`Are you sure you want to delete "${record.title}"?`}
             okText="Yes"
@@ -133,7 +146,7 @@ export default function BookList() {
   return (
     <Layout>
       {contextHolder}
-      <Content style={{ padding: "1px 20px 20px 20px", }}>
+      <Content style={{ padding: "1px 20px 20px 20px" }}>
         <Title
           level={2}
           style={{
@@ -150,6 +163,7 @@ export default function BookList() {
         >
           Book Listing
         </Title>
+
         <Row gutter={[16, 16]} style={{ marginBottom: "15px" }}>
           <Col xs={24} sm={12} md={8} lg={6}>
             <Input.Search
@@ -171,11 +185,13 @@ export default function BookList() {
               value={genreFilter || undefined}
               onChange={(value) => {
                 setCurrentPage(1);
-                setGenreFilter(value);
+                setGenreFilter(value || null);
               }}
             >
               {Array.from(new Set(books.map((b) => b.genre))).map((genre) => (
-                <Select.Option key={genre} value={genre}>{genre}</Select.Option>
+                <Select.Option key={genre} value={genre}>
+                  {genre}
+                </Select.Option>
               ))}
             </Select>
           </Col>
@@ -188,7 +204,7 @@ export default function BookList() {
               value={statusFilter || undefined}
               onChange={(value) => {
                 setCurrentPage(1);
-                setStatusFilter(value);
+                setStatusFilter(value || null);
               }}
             >
               <Select.Option value="Available">Available</Select.Option>
@@ -208,7 +224,6 @@ export default function BookList() {
           >
             <Spin size="large" tip="Loading..." />
           </div>
-
         ) : (
           <Table
             bordered

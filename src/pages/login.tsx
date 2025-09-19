@@ -1,16 +1,23 @@
 import React, { useState, useContext } from "react";
 import { Form, Input, Button, message, Card, Typography } from "antd";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext"; 
 import api from "@/utils/api";
+
 const { Title, Text } = Typography;
+
+interface LoginFormValues {
+  email: string;
+  password: string;
+}
 
 export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { setUser } = useContext(AuthContext); 
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
       const res = await api.post("/users/login", values);
@@ -21,12 +28,14 @@ export default function Login() {
 
       message.success("Login successful");
       router.push("/");
-    } catch (error: any) {
-      message.error(error.response?.data?.message || "Login failed");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      message.error(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="login-container">
       <Card
@@ -39,7 +48,7 @@ export default function Login() {
           <Text type="secondary">Login to your account</Text>
         </div>
 
-        <Form
+        <Form<LoginFormValues>
           onFinish={onFinish}
           layout="vertical"
           initialValues={{ email: "", password: "" }}
@@ -82,9 +91,9 @@ export default function Login() {
 
           <div style={{ textAlign: "center" }}>
             <Text>
-              Don't have an account?{" "}
-              <a href="/signup" style={{ color: "#8B5E3C" }}>Sign Up</a>
-            </Text>
+  Don&apos;t have an account?{" "}
+  <Link href="/signup" style={{ color: "#8B5E3C" }}>Sign Up</Link>
+</Text>
           </div>
         </Form>
       </Card>
@@ -100,10 +109,6 @@ export default function Login() {
 
         .login-card {
           box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .login-header Title {
-          font-weight: bold;
         }
       `}</style>
     </div>

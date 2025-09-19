@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, Button, message } from "antd";
 import api from "@/utils/api";
+
 interface AddBookModalProps {
   visible: boolean;
   onClose: () => void;
   onBookAdded: () => void;
 }
 
+interface BookFormValues {
+  title: string;
+  author: string;
+  genre: string;
+  publishedYear: number | string;
+  status: "Available" | "Issued";
+}
+
 const AddBookModal: React.FC<AddBookModalProps> = ({ visible, onClose, onBookAdded }) => {
   const [loading, setLoading] = useState(false);
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<BookFormValues>();
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: BookFormValues) => {
     setLoading(true);
     try {
       const payload = {
@@ -27,11 +36,14 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ visible, onClose, onBookAdd
       form.resetFields();
       onBookAdded();
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      message.error(
-        error?.response?.data?.message || "Failed to add book. Please check all fields."
-      );
+      // Type-safe error handling
+      if (error instanceof Error) {
+        message.error(error.message);
+      } else {
+        message.error("Failed to add book. Please check all fields.");
+      }
     } finally {
       setLoading(false);
     }
@@ -80,15 +92,11 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ visible, onClose, onBookAdd
           name="publishedYear"
           rules={[
             { required: true, message: "Please enter published year" },
-            {
-              pattern: /^[0-9]{4}$/,
-              message: "Please enter a valid year (e.g., 2023)",
-            },
+            { pattern: /^[0-9]{4}$/, message: "Please enter a valid year (e.g., 2023)" },
           ]}
         >
           <Input type="number" placeholder="Enter published year" />
         </Form.Item>
-
 
         <Form.Item
           label="Status"
