@@ -56,7 +56,7 @@ Build a **responsive React.js dashboard** that fetches, displays, and allows **C
   - `PUT /books/:id` – Edit a book
   - `DELETE /books/:id` – Delete a book
 
-> Currently integrated with a local or mock API (like `crudcrud.com` or `json-server`).
+> This frontend is currently integrated with a custom backend API available [https://github.com/AnjaliRaj05/book-management-Backend-Api].
 
 ---
 
@@ -79,6 +79,28 @@ Build a **responsive React.js dashboard** that fetches, displays, and allows **C
   - `ProfileModal.tsx` – user profile modal
 
 ---
+## User Flow
 
-## Folder Structure
+### Landing Page / Home
+- Any user can visit the homepage and explore the available books.
+- if Users(who is not loggedIn)  attempt to open the **Add Book** or **Profile** modals it will be first redirected to the login page only authenticated user will be allowed to perform the actions
+- If the user is not authenticated, any restricted action (Add, Edit, Delete, Profile) will **redirect them to the Login page**.
+
+---
+### Desktop View 
+<img width="1890" height="858" alt="Screenshot 2025-09-20 024620" src="https://github.com/user-attachments/assets/53cc8008-e6e6-4500-90df-85afdeef32ea" />
+
+<img width="1897" height="847" alt="Screenshot 2025-09-20 024523" src="https://github.com/user-attachments/assets/37085f32-2a92-491c-b8d0-e62a869394b3" />
+<img width="1452" height="2754" alt="localhost_3000_ (1)" src="https://github.com/user-attachments/assets/b20a3cec-9b6f-431a-8188-8d0ec7590c1c" />
+<img width="1452" height="2754" alt="localhost_3000_ (5)" src="https://github.com/user-attachments/assets/3642da32-4d17-41ca-94ed-aba740ecca40" />
+<img width="1452" height="2602" alt="localhost_3000_ (2)" src="https://github.com/user-attachments/assets/feb9c328-1b99-4b8e-a761-bd9478cb5014" />
+
+---
+### Mobile View
+
+
+<img width="1452" height="2826" alt="localhost_3000_" src="https://github.com/user-attachments/assets/798f25a7-ced9-469d-bb2c-4c6f1a2ff896" />
+
+<img width="1290" height="4047" alt="localhost_3000_(iPhone 14 Pro Max) (1)" src="https://github.com/user-attachments/assets/f008600c-fe76-4f20-ace9-20adc246a214" />
+
 
