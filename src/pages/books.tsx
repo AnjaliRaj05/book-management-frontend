@@ -76,43 +76,43 @@ export default function BookList() {
       messageApi.error(err.response?.data?.message || "❌ Failed to delete book");
     }
   };
+const fetchBooks = useCallback(
+  async (page = 1, limit = 10, search = searchQuery) => {
+    setLoading(true);
+    try {
+      const query: Record<string, string | number> = { page, limit };
+      if (genreFilter) query.genre = genreFilter;
+      if (statusFilter) query.status = statusFilter;
+      if (search) query.search = search;  // use param, not stale state
 
-  // Use useCallback to memoize fetchBooks and satisfy useEffect dependency
-  const fetchBooks = useCallback(
-    async (page = 1, limit = 10) => {
-      setLoading(true);
-      try {
-        const query: Record<string, string | number> = { page, limit };
-        if (genreFilter) query.genre = genreFilter;
-        if (statusFilter) query.status = statusFilter;
-        if (searchQuery) query.search = searchQuery;
+      const queryString = new URLSearchParams(
+        Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)]))
+      ).toString();
 
-        const queryString = new URLSearchParams(
-          Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)]))
-        ).toString();
-
-        const res = await api.get<{ books: Book[]; total: number }>(`/books?${queryString}`);
-        setBooks(res.data.books);
-        setTotal(res.data.total);
-
-        if (res.data.books.length === 0) {
-          messageApi.info("No books found with current filters or search.");
-        }
-      } catch (error) {
-        const err = error as AxiosError<{ message: string }>;
-        console.error(err);
-        messageApi.error(err.response?.data?.message || "❌ Failed to fetch books");
-        setBooks([]);
-      } finally {
-        setLoading(false);
+      const res = await api.get<{ books: Book[]; total: number }>(`/books?${queryString}`);
+      setBooks(res.data.books);
+      setTotal(res.data.total);
+      console.log("response", res.data);
+      if (res.data.books.length === 0) {
+        messageApi.info("No books found with current filters or search.");
       }
-    },
-    [genreFilter, statusFilter, searchQuery, messageApi]
-  );
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      console.error(err);
+      messageApi.error(err.response?.data?.message || "❌ Failed to fetch books");
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [genreFilter, statusFilter, searchQuery, messageApi]
+);
 
+   
   useEffect(() => {
-    fetchBooks(currentPage, pageSize);
-  }, [fetchBooks, currentPage, pageSize]);
+  fetchBooks(currentPage, pageSize);
+}, [fetchBooks, currentPage, pageSize, searchQuery, genreFilter, statusFilter]);
+
 
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },
@@ -171,9 +171,10 @@ export default function BookList() {
               allowClear
               style={{ width: "100%" }}
               onSearch={(value) => {
-                setCurrentPage(1);
-                setSearchQuery(value);
-              }}
+  setCurrentPage(1);
+  setSearchQuery(value);
+}}
+
             />
           </Col>
 
