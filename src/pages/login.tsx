@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Form, Input, Button, message, Card, Typography } from "antd";
+import { Form, Input, Button, Card, Typography, message } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext"; 
@@ -17,6 +17,9 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { setUser } = useContext(AuthContext); 
 
+  // AntD toast hook
+  const [messageApi, contextHolder] = message.useMessage();
+
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
@@ -26,11 +29,11 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
 
-      message.success("Login successful");
+      messageApi.success("Login successful");
       router.push("/");
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
-      message.error(err.response?.data?.message || "Login failed");
+      messageApi.error(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -38,6 +41,8 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      {contextHolder}
+
       <Card
         className="login-card"
         bordered={false}
@@ -91,9 +96,9 @@ export default function Login() {
 
           <div style={{ textAlign: "center" }}>
             <Text>
-  Don&apos;t have an account?{" "}
-  <Link href="/signup" style={{ color: "#8B5E3C" }}>Sign Up</Link>
-</Text>
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" style={{ color: "#8B5E3C" }}>Sign Up</Link>
+            </Text>
           </div>
         </Form>
       </Card>

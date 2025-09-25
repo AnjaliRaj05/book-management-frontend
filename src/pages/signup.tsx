@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Form, Input, Button, message, Card, Typography } from "antd";
+import { Form, Input, Button, Card, Typography, message } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext";
@@ -18,20 +18,29 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const { setUser } = useContext(AuthContext);
 
+  // AntD toast hook
+  const [messageApi, contextHolder] = message.useMessage();
+
   const onFinish = async (values: SignupFormValues) => {
     setLoading(true);
     try {
       const res = await api.post("/users/register", values);
       const userData = res.data.user;
+
       localStorage.setItem("token", res.data.token || "dummy");
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
 
-      message.success("Signup successful!");
+      messageApi.success("Signup successful!");
       router.push("/");
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
-      message.error(err.response?.data?.message || "Signup failed");
+
+      if (err.response?.data?.message === "exists") {
+        messageApi.warning("User already registered. Please login.");
+      } else {
+        messageApi.error(err.response?.data?.message || "Signup failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -39,6 +48,8 @@ export default function Signup() {
 
   return (
     <div className="signup-container">
+      {contextHolder}
+
       <Card
         className="signup-card"
         bordered={false}
